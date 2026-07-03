@@ -1,0 +1,65 @@
+:root {
+  --green: #006c35;
+  --green-dark: #004d26;
+  --green-light: #e8f5ee;
+  --gold: #c9a227;
+  --gold-light: #f5ecd3;
+  --text: #3d3d3d;
+  --text-light: #6b7280;
+  --text-h: #1a1a1a;
+  --bg: #ffffff;
+  --bg-alt: #f8faf9;
+  --border: #e2e8e4;
+  --shadow: 0 4px 24px rgba(0, 108, 53, 0.08);
+  --radius: 12px;
+  --sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --max-width: 1200px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1, h2, h3 {
+  color: var(--text-h);
+  line-height: 1.25;
+}
+
+img {
+  max-width: 100%;
+}
+
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .header__nav,
+[dir="rtl"] .header__actions,
+[dir="rtl"] .routes-list__item {
+  flex-direction: row-reverse;
+}
