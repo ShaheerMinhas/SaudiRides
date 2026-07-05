@@ -10,3 +10,4 @@
 .byebug_history
 .bundle/
 config/master.key
+.env
