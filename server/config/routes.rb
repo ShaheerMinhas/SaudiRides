@@ -10,6 +10,12 @@ Rails.application.routes.draw do
   resources :bookings
 
   namespace :admin do
+    resources :routes do
+      resources :route_stops, only: %i[index create]
+    end
+    resources :route_stops, only: %i[update destroy]
+    resources :car_route_pricings
+    resources :cars
   end
 
   # Defines the root path route ("/")
