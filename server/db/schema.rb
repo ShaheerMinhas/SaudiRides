@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_07_12_092714) do
+ActiveRecord::Schema[7.1].define(version: 2026_07_23_195718) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -54,6 +54,37 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_12_092714) do
     t.index ["jti"], name: "index_admins_on_jti", unique: true
   end
 
+  create_table "booking_stops", force: :cascade do |t|
+    t.bigint "booking_id", null: false
+    t.string "stop_location", null: false
+    t.integer "sequence_order", default: 1, null: false
+    t.index ["booking_id"], name: "index_booking_stops_on_booking_id"
+  end
+
+  create_table "bookings", force: :cascade do |t|
+    t.bigint "route_id", null: false
+    t.bigint "car_id", null: false
+    t.bigint "driver_id"
+    t.string "customer_name", null: false
+    t.string "customer_phone", null: false
+    t.string "customer_email", null: false
+    t.string "pickup_location", null: false
+    t.string "dropoff_location", null: false
+    t.date "pickup_date", null: false
+    t.time "pickup_time", null: false
+    t.integer "passenger_count", null: false
+    t.integer "luggage_count", default: 0
+    t.text "special_instructions"
+    t.boolean "has_multiple_stops", default: false
+    t.decimal "price", precision: 10, scale: 2, null: false
+    t.string "status", default: "new", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["car_id"], name: "index_bookings_on_car_id"
+    t.index ["driver_id"], name: "index_bookings_on_driver_id"
+    t.index ["route_id"], name: "index_bookings_on_route_id"
+  end
+
   create_table "car_route_pricings", force: :cascade do |t|
     t.bigint "car_id", null: false
     t.bigint "route_id", null: false
@@ -73,7 +104,36 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_12_092714) do
     t.boolean "is_available", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "car_type", default: "Sedan", null: false
     t.index ["registration_number"], name: "index_cars_on_registration_number", unique: true
+  end
+
+  create_table "contact_messages", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "email", null: false
+    t.string "phone"
+    t.text "message", null: false
+    t.string "status", default: "new"
+    t.datetime "created_at", null: false
+  end
+
+  create_table "drivers", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "phone", null: false
+    t.bigint "car_id"
+    t.boolean "availability_status", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["car_id"], name: "index_drivers_on_car_id"
+  end
+
+  create_table "flight_details", force: :cascade do |t|
+    t.bigint "booking_id", null: false
+    t.string "flight_number", null: false
+    t.string "airline_name", null: false
+    t.string "flight_type", null: false
+    t.datetime "scheduled_time", null: false
+    t.index ["booking_id"], name: "index_flight_details_on_booking_id", unique: true
   end
 
   create_table "route_stops", force: :cascade do |t|
@@ -97,7 +157,13 @@ ActiveRecord::Schema[7.1].define(version: 2026_07_12_092714) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "booking_stops", "bookings", on_delete: :cascade
+  add_foreign_key "bookings", "cars"
+  add_foreign_key "bookings", "drivers", on_delete: :nullify
+  add_foreign_key "bookings", "routes"
   add_foreign_key "car_route_pricings", "cars"
   add_foreign_key "car_route_pricings", "routes"
+  add_foreign_key "drivers", "cars", on_delete: :nullify
+  add_foreign_key "flight_details", "bookings", on_delete: :cascade
   add_foreign_key "route_stops", "routes"
 end

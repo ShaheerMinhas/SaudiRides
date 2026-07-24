@@ -39,7 +39,7 @@ module Admin
     end
 
     def car_params
-      params.require(:car).permit(:name, :model, :capacity, :registration_number, :is_available, :picture)
+      params.require(:car).permit(:name, :model, :capacity, :registration_number, :is_available, :car_type, :picture)
     end
 
     def serialize_car(car)
