@@ -39,10 +39,14 @@ Rails.application.configure do
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.
-  # config.assume_ssl = true
+  config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  # Exclude Railway health checks so the probe is not redirected.
+  config.force_ssl = ENV["FORCE_SSL"] != "false"
+  config.ssl_options = {
+    redirect: { exclude: ->(request) { request.path == "/up" } }
+  }
 
   # Log to STDOUT by default
   config.logger = ActiveSupport::Logger.new(STDOUT)
@@ -80,11 +84,11 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # Allow Railway / custom hosts.
+  config.hosts.clear
+  if ENV["APP_HOST"].present?
+    host = ENV["APP_HOST"].sub(%r{\Ahttps?://}, "")
+    Rails.application.routes.default_url_options[:host] = host
+    Rails.application.routes.default_url_options[:protocol] = "https"
+  end
 end

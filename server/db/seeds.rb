@@ -2,12 +2,66 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
+images_dir = Rails.root.join("db/seeds/images")
+
 cars = [
-  { name: "GMC Yukon", model: "2023", capacity: 7, registration_number: "SR-1001" },
-  { name: "Toyota Hiace", model: "2022", capacity: 12, registration_number: "SR-1002" },
-  { name: "Toyota Camry", model: "2024", capacity: 4, registration_number: "SR-1003" },
-  { name: "Mercedes Sprinter", model: "2023", capacity: 15, registration_number: "SR-1004" }
-].map { |attrs| Car.find_or_create_by!(registration_number: attrs[:registration_number]) { |c| c.assign_attributes(attrs) } }
+  {
+    name: "GMC Yukon",
+    model: "2023",
+    capacity: 7,
+    registration_number: "SR-1001",
+    car_type: "SUV",
+    picture: images_dir.join("gmc.avif")
+  },
+  {
+    name: "Toyota Hiace",
+    model: "2022",
+    capacity: 12,
+    registration_number: "SR-1002",
+    car_type: "Van",
+    picture: images_dir.join("hiace.jpg")
+  },
+  {
+    name: "Hyundai Elantra",
+    model: "2024",
+    capacity: 4,
+    registration_number: "SR-1003",
+    car_type: "Sedan",
+    picture: images_dir.join("sedan.avif")
+  },
+  {
+    name: "Hyundai Staria",
+    model: "2024",
+    capacity: 9,
+    registration_number: "SR-1004",
+    car_type: "Van",
+    picture: images_dir.join("staria.jpg")
+  },
+  {
+    name: "Hyundai H1",
+    model: "2023",
+    capacity: 8,
+    registration_number: "SR-1005",
+    car_type: "Van",
+    picture: images_dir.join("h1.jpg")
+  }
+].map do |attrs|
+  picture_path = attrs.delete(:picture)
+  car = Car.find_or_create_by!(registration_number: attrs[:registration_number]) do |c|
+    c.assign_attributes(attrs)
+  end
+  car.update!(attrs)
+
+  if picture_path&.exist? && (!car.picture.attached? || car.picture.filename.to_s != picture_path.basename.to_s)
+    car.picture.attach(
+      io: File.open(picture_path),
+      filename: picture_path.basename.to_s,
+      content_type: picture_path.extname == ".avif" ? "image/avif" : "image/jpeg"
+    )
+  end
+
+  car
+end
 
 routes = [
   {
@@ -61,3 +115,12 @@ cars.each do |car|
 end
 
 puts "Seeded #{Car.count} cars, #{Route.count} routes, #{RouteStop.count} route_stops, #{CarRoutePricing.count} car_route_pricings"
+puts "Cars with pictures: #{Car.select { |c| c.picture.attached? }.size}"
+
+admin = AdminUser.find_or_initialize_by(email: "admin@saudirides.com")
+admin.name = "SaudiRides Admin"
+admin.role = "admin"
+admin.is_active = true
+admin.password = "admin1234" if admin.new_record? || admin.password_hash.blank?
+admin.save!
+puts "Admin ready: #{admin.email} / admin1234 (change after first login)"

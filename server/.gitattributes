@@ -1,0 +1,6 @@
+
+# Keep shell scripts LF for Linux containers
+bin/** text eol=lf
+*.sh text eol=lf
+docker-entrypoint text eol=lf
+

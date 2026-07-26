@@ -1,1 +1,9 @@
 .DS_Store
+.env
+server/.env
+server/vendor/bundle/
+server/tmp/
+server/log/
+server/storage/
+client/node_modules/
+.tools/

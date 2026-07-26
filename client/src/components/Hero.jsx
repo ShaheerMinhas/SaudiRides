@@ -14,8 +14,13 @@ export default function Hero() {
           {t.hero.cta}
         </Link>
       </div>
-      <div className="hero__visual" aria-hidden="true">
-        <div className="hero__mosque">🕌</div>
+      <div className="hero__visual">
+        <img
+          className="hero__image"
+          src="/saudibg.webp"
+          alt=""
+          loading="eager"
+        />
       </div>
     </section>
   )

@@ -7,7 +7,9 @@ Rails.application.routes.draw do
 
   get "api/hello" => "hello#index"
 
-  resources :bookings
+  resources :bookings, only: [:create]
+  resources :cars, only: [:index]
+  resources :routes, only: [:index]
   resources :contact_messages, only: [:create]
   get "car_route_pricing" => "car_route_pricings#show"
 

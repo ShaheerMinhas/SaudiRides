@@ -32,9 +32,6 @@ export default function Header() {
 
         <div className="header__actions">
           <LanguageSwitcher />
-          <Link to="/booking" className="btn btn--primary btn--sm">
-            {t.hero.cta}
-          </Link>
         </div>
       </div>
     </header>

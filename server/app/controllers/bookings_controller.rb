@@ -30,7 +30,12 @@ class BookingsController < ApplicationController
     route = Route.find_by(id: permitted[:route_id])
 
     permitted.delete(:booking_stops_attributes) unless truthy?(permitted[:has_multiple_stops]) && route&.route_type == "standard"
-    permitted.delete(:flight_detail_attributes) unless route&.origin.to_s.downcase.include?("airport")
+
+    flight = permitted[:flight_detail_attributes]
+    flight_filled = flight.present? && [
+      flight[:flight_number], flight[:airline_name], flight[:scheduled_time]
+    ].any? { |value| value.present? }
+    permitted.delete(:flight_detail_attributes) unless flight_filled
 
     permitted
   end

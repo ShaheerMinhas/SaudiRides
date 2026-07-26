@@ -5,12 +5,20 @@
 
 # Read more: https://github.com/cyu/rack-cors
 
+allowed_origins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  ENV["FRONTEND_ORIGIN"],
+  *ENV.fetch("FRONTEND_ORIGINS", "").split(",")
+].map { |origin| origin.to_s.strip }.reject(&:empty?).uniq
+
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "http://localhost:5173"
+    origins(*allowed_origins)
 
     resource "*",
       headers: :any,
-      methods: [:get, :post, :put, :patch, :delete, :options, :head]
+      methods: [:get, :post, :put, :patch, :delete, :options, :head],
+      expose: ["Authorization"]
   end
 end
