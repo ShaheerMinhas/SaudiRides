@@ -1,5 +1,7 @@
 module Admin
   class CarsController < BaseController
+    include CarSerialization
+
     before_action :set_car, only: %i[show update destroy]
 
     def index
@@ -40,10 +42,6 @@ module Admin
 
     def car_params
       params.require(:car).permit(:name, :model, :capacity, :registration_number, :is_available, :car_type, :picture)
-    end
-
-    def serialize_car(car)
-      car.as_json.merge(picture_url: car.picture.attached? ? url_for(car.picture) : nil)
     end
   end
 end
